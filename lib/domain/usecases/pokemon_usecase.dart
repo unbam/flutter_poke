@@ -21,9 +21,8 @@ class PokemonUseCase extends UseCase<PokemonRepository> {
   }
 
   ///
-  /// ポケモン一覧の取得
-  /// [limit] リミット
-  /// [offset] オフセット
+  /// ポケモン詳細の取得
+  /// [url] 詳細取得URL
   ///
   Future<Pokemon> fetchPokemon({required String url}) {
     return repository.getPokemon(url: url);
