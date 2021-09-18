@@ -1,3 +1,5 @@
+import '../../data/models/pokemons.dart';
+
 ///
 /// ポケモンリポジトリ
 ///
@@ -7,6 +9,5 @@ abstract class PokemonRepository {
   /// [limit] リミット
   /// [offset] オフセット
   ///
-  Future<Map<String, dynamic>> getPokemons(
-      {required int limit, required int offset});
+  Future<Pokemons> getPokemons({required int limit, required int offset});
 }

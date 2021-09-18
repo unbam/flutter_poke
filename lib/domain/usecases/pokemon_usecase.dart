@@ -1,3 +1,4 @@
+import '../../../data/models/pokemons.dart';
 import '../repositories/pokemon_repository.dart';
 import 'usecase.dart';
 
@@ -14,8 +15,7 @@ class PokemonUseCase extends UseCase<PokemonRepository> {
   /// [limit] リミット
   /// [offset] オフセット
   ///
-  Future<Map<String, dynamic>> fetchPokemons(
-      {required int limit, required int offset}) {
+  Future<Pokemons> fetchPokemons({required int limit, required int offset}) {
     return repository.getPokemons(limit: limit, offset: offset);
   }
 }
