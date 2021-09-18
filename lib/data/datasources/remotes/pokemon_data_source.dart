@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 
+import '../../../../util/util.dart';
+
 ///
 /// PokemonDataSourceクラス
 ///
 abstract class PokemonDataSource {
   ///
   /// ポケモン一覧の取得
-  /// [limit]
+  /// [limit] リミット
   /// [offset] オフセット
   ///
   Future<Map<String, dynamic>> getPokemons(
@@ -25,7 +27,17 @@ class PokemonDataSourceImpl extends PokemonDataSource {
   @override
   Future<Map<String, dynamic>> getPokemons(
       {required int limit, required int offset}) {
-    // TODO: implement getPokemons
-    throw UnimplementedError();
+    Util.appDebugPrint(
+        place: 'PokemonDataSourceImpl',
+        event: 'getPokemons',
+        value: 'limit: $limit, offset: $offset');
+
+    return _dio.get<Map<String, dynamic>>(
+      '/api/v2/pokemon',
+      queryParameters: <String, String>{
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      },
+    ).then((response) => response.data!);
   }
 }
