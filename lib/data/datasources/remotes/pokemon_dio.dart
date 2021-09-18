@@ -1,6 +1,5 @@
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../../util/constant.dart';
 import '../../../util/util.dart';
@@ -18,9 +17,10 @@ class PokemonDio with DioMixin implements Dio {
       receiveTimeout: Constant.timeoutMilliseconds,
     );
 
-    if (kDebugMode) {
-      interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
-    }
+    // 出力過多のためコメントアウト
+    // if (kDebugMode) {
+    //   interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+    // }
 
     httpClientAdapter = DefaultHttpClientAdapter();
     (httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =

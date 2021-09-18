@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../util/util.dart';
+import '../../models/pokemons.dart';
 
 ///
 /// PokemonDataSourceクラス
@@ -11,8 +12,7 @@ abstract class PokemonDataSource {
   /// [limit] リミット
   /// [offset] オフセット
   ///
-  Future<Map<String, dynamic>> getPokemons(
-      {required int limit, required int offset});
+  Future<Pokemons> getPokemons({required int limit, required int offset});
 }
 
 ///
@@ -25,8 +25,7 @@ class PokemonDataSourceImpl extends PokemonDataSource {
   final Dio _dio;
 
   @override
-  Future<Map<String, dynamic>> getPokemons(
-      {required int limit, required int offset}) {
+  Future<Pokemons> getPokemons({required int limit, required int offset}) {
     Util.appDebugPrint(
         place: 'PokemonDataSourceImpl',
         event: 'getPokemons',
@@ -38,6 +37,6 @@ class PokemonDataSourceImpl extends PokemonDataSource {
         'limit': limit.toString(),
         'offset': offset.toString(),
       },
-    ).then((response) => response.data!);
+    ).then((response) => Pokemons.fromJson(response.data!));
   }
 }

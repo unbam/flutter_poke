@@ -16,4 +16,10 @@ class Style {
   static Color red = const Color(0xFFEF9A9A);
   static Color brown = const Color(0xFFBCAAA4);
   static Color gray = const Color(0xFFBDBDBD);
+
+  static TextStyle listItemTextStyle = TextStyle(
+    color: Style.white,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+  );
 }
