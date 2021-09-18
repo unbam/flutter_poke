@@ -1,5 +1,6 @@
 import '../../domain/repositories/pokemon_repository.dart';
 import '../datasources/remotes/pokemon_data_source.dart';
+import '../models/pokemon.dart';
 import '../models/pokemons.dart';
 
 ///
@@ -15,5 +16,10 @@ class PokemonRepositoryImpl extends PokemonRepository {
   @override
   Future<Pokemons> getPokemons({required int limit, required int offset}) {
     return _dataSource.getPokemons(limit: limit, offset: offset);
+  }
+
+  @override
+  Future<Pokemon> getPokemon({required String url}) {
+    return _dataSource.getPokemon(url: url);
   }
 }

@@ -1,3 +1,4 @@
+import '../../../data/models/pokemon.dart';
 import '../../../data/models/pokemons.dart';
 import '../repositories/pokemon_repository.dart';
 import 'usecase.dart';
@@ -17,5 +18,14 @@ class PokemonUseCase extends UseCase<PokemonRepository> {
   ///
   Future<Pokemons> fetchPokemons({required int limit, required int offset}) {
     return repository.getPokemons(limit: limit, offset: offset);
+  }
+
+  ///
+  /// ポケモン一覧の取得
+  /// [limit] リミット
+  /// [offset] オフセット
+  ///
+  Future<Pokemon> fetchPokemon({required String url}) {
+    return repository.getPokemon(url: url);
   }
 }
