@@ -22,4 +22,15 @@ class Style {
     fontSize: 18,
     fontWeight: FontWeight.w700,
   );
+
+  static TextStyle detailItemHeaderTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+  );
+
+  static TextStyle detailItemTextStyle = TextStyle(
+    color: Style.blueGray,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+  );
 }
