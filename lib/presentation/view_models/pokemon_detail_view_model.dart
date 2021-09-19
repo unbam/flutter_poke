@@ -67,7 +67,7 @@ class PokemonDetailViewModel {
 
   ///
   /// ポケモン詳細取得
-  /// [limit] リミット
+  /// [url] 詳細URL
   ///
   Future<void> fetch({required String url}) async {
     return _useCase.fetchPokemon(url: url).then((value) {
