@@ -106,6 +106,25 @@ class PokemonDetailPage extends HookConsumerWidget {
                             height: 160.0,
                             fit: BoxFit.fill,
                           ),
+                          // タイプ
+                          Wrap(
+                            spacing: 10,
+                            children: pokemon.types
+                                .map(
+                                  (e) => Chip(
+                                    label: Text(e,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Style.black,
+                                        )),
+                                    labelPadding: EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                    ),
+                                    backgroundColor: _typeColor(e),
+                                  ),
+                                )
+                                .toList(),
+                          ),
                           Spacer(),
                           // ステータス部分
                           Container(
@@ -193,5 +212,71 @@ class PokemonDetailPage extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  ///
+  /// タイプのカラー
+  ///
+  Color _typeColor(String type) {
+    var typeColor = Style.white;
+    switch (type) {
+      case 'normal':
+        typeColor = Style.normal;
+        break;
+      case 'fire':
+        typeColor = Style.fire;
+        break;
+      case 'water':
+        typeColor = Style.water;
+        break;
+      case 'grass':
+        typeColor = Style.grass;
+        break;
+      case 'electric':
+        typeColor = Style.electric;
+        break;
+      case 'ice':
+        typeColor = Style.ice;
+        break;
+      case 'fighting':
+        typeColor = Style.fighting;
+        break;
+      case 'poison':
+        typeColor = Style.poison;
+        break;
+      case 'ground':
+        typeColor = Style.ground;
+        break;
+      case 'flying':
+        typeColor = Style.flying;
+        break;
+      case 'psychic':
+        typeColor = Style.psychic;
+        break;
+      case 'bug':
+        typeColor = Style.bug;
+        break;
+      case 'rock':
+        typeColor = Style.rock;
+        break;
+      case 'ghost':
+        typeColor = Style.ghost;
+        break;
+      case 'dragon':
+        typeColor = Style.dragon;
+        break;
+      case 'dark':
+        typeColor = Style.dark;
+        break;
+      case 'steel':
+        typeColor = Style.steel;
+        break;
+      case 'fairy':
+        typeColor = Style.fairy;
+        break;
+      default:
+        break;
+    }
+    return typeColor;
   }
 }
