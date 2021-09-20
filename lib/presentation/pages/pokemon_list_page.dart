@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../data/models/pokemons.dart';
+import '../../data/models/pokemon_result.dart';
 import '../../util/util.dart';
 import '../style.dart';
 import '../view_models/pokemon_list_view_model.dart';
@@ -42,7 +42,7 @@ class PokemonListPage extends HookConsumerWidget {
               children: [
                 // Header
                 Text(
-                  'Pockemon',
+                  'Pokemon',
                   style: const TextStyle(
                       fontWeight: FontWeight.w700, fontSize: 24),
                 ),
@@ -51,32 +51,36 @@ class PokemonListPage extends HookConsumerWidget {
                   builder: (context) {
                     final snapshot = useFuture(useMemoized(() {
                       return ref
-                          .watch(pokemonListViewModelProvider)
+                          .watch(pokemonListViewModelProvider.notifier)
                           .fetch(limit: 100, offset: 0);
                     }));
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return Container();
                     }
 
-                    final pokemons =
-                        ref.watch(pokemonListViewModelProvider).pokemons!;
+                    final pokemons = ref.watch(pokemonListViewModelProvider)
+                        as List<PokemonResult>;
 
                     return Expanded(
-                      child: SingleChildScrollView(
-                        child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: _pokemonItem(pokemons, index),
-                            );
-                          },
-                          itemCount: pokemons.results.length,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                        ),
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          // ページング
+                          if (index >= pokemons.length - 1) {
+                            Util.appDebugPrint(
+                                place: runtimeType.toString(),
+                                event: 'ListView.builder',
+                                value: pokemons.length.toString());
+                            Future(() => ref
+                                .watch(pokemonListViewModelProvider.notifier)
+                                .fetch(limit: 100, offset: pokemons.length));
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: _pokemonItem(pokemons[index], index),
+                          );
+                        },
+                        itemCount: pokemons.length,
                       ),
                     );
                   },
@@ -94,7 +98,7 @@ class PokemonListPage extends HookConsumerWidget {
   /// [pokemons] ポケモンリスト
   /// [index] インデックス
   ///
-  Widget _pokemonItem(Pokemons pokemons, int index) {
+  Widget _pokemonItem(PokemonResult pokemons, int index) {
     return HookConsumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         return GestureDetector(
@@ -102,11 +106,11 @@ class PokemonListPage extends HookConsumerWidget {
             Util.appDebugPrint(
                 place: runtimeType.toString(),
                 event: '_pokemonItem: onTap',
-                value: 'name: ${pokemons.results[index].name}, index: $index');
+                value: 'name: ${pokemons.name}, index: $index');
 
             // 詳細画面に遷移
-            Navigator.of(context).push(
-                PokemonDetailPage.route(url: pokemons.results[index].url));
+            Navigator.of(context)
+                .push(PokemonDetailPage.route(url: pokemons.url));
           },
           child: Card(
             shape: RoundedRectangleBorder(
@@ -120,7 +124,7 @@ class PokemonListPage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    pokemons.results[index].name,
+                    pokemons.name,
                     style: Style.listItemTextStyle,
                   ),
                   SizedBox(

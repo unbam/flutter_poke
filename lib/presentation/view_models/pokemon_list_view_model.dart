@@ -1,13 +1,13 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../data/models/pokemons.dart';
-import '../../../domain/usecases/pokemon_usecase.dart';
+import '../../data/models/pokemon_result.dart';
+import '../../domain/usecases/pokemon_usecase.dart';
 import '../providers/pokemon_provider.dart';
 
 ///
 /// pokemonListViewModelProvider
 ///
-final pokemonListViewModelProvider = Provider(
+final pokemonListViewModelProvider = StateNotifierProvider(
   (ref) => PokemonListViewModel(
     ref.read(pokemonProvider),
   ),
@@ -16,16 +16,14 @@ final pokemonListViewModelProvider = Provider(
 ///
 /// ポケモンリストビューモデル
 ///
-class PokemonListViewModel {
-  PokemonListViewModel(this._useCase);
+class PokemonListViewModel extends StateNotifier<List<PokemonResult>> {
+  PokemonListViewModel(this._useCase) : super([]);
 
   /// ユースケース
   final PokemonUseCase _useCase;
 
   /// ポケモンリスト
-  Pokemons? _pokemons;
-
-  Pokemons? get pokemons => _pokemons;
+  List<PokemonResult>? get pokemons => state;
 
   ///
   /// ポケモンリスト取得
@@ -40,7 +38,8 @@ class PokemonListViewModel {
             name: value.results[i].name[0].toUpperCase() +
                 value.results[i].name.substring(1).toLowerCase());
       }
-      _pokemons = value;
+
+      state = [...state, ...value.results];
     });
   }
 }
