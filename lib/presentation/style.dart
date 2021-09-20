@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 /// スタイル定義
 ///
 class Style {
+  static Color pockemon = const Color(0xFFFECA1B);
+
   static Color black = const Color(0xFF263238);
   static Color blueGray = const Color(0xFF607D8B);
   static Color lightGray = const Color(0xFFCFD8DC);
