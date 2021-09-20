@@ -32,3 +32,8 @@ flutter:
 
   assets:
     - assets/images/
+
+  fonts:
+   - family: Pokemon
+     fonts:
+       - asset: assets/fonts/Pokemon Solid.ttf
