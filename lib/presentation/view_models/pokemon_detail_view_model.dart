@@ -69,6 +69,10 @@ class PokemonDetailViewModel {
   late List<String> _types;
   List<String> get types => _types;
 
+  /// 覚えるわざ
+  late List<String> _moves;
+  List<String> get moves => _moves;
+
   ///
   /// ポケモン詳細取得
   /// [url] 詳細URL
@@ -89,6 +93,7 @@ class PokemonDetailViewModel {
       _specialDefense = value.stats[4]['base_stat'].toString();
       _speed = value.stats[5]['base_stat'].toString();
       _types = value.types.map((e) => e['type']['name'] as String).toList();
+      _moves = value.moves.map((e) => e['move']['name'] as String).toList();
     });
   }
 }

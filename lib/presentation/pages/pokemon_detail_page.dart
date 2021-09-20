@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../util/util.dart';
 import '../style.dart';
 import '../view_models/pokemon_detail_view_model.dart';
 
@@ -127,55 +128,7 @@ class PokemonDetailPage extends HookConsumerWidget {
                           ),
                           Spacer(),
                           // ステータス部分
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            decoration: BoxDecoration(
-                              color: Style.white,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(32.0),
-                                topRight: Radius.circular(32.0),
-                              ),
-                            ),
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 40.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'たかさ: ${pokemon.height}cm',
-                                        style: Style.detailItemHeaderTextStyle,
-                                      ),
-                                      SizedBox(
-                                        width: 16.0,
-                                      ),
-                                      Text(
-                                        'おもさ: ${pokemon.weight}kg',
-                                        style: Style.detailItemHeaderTextStyle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _statusItem('HP: ${pokemon.hp}'),
-                                    _statusItem('こうげき: ${pokemon.attack}'),
-                                    _statusItem('しゅび: ${pokemon.defense}'),
-                                    _statusItem(
-                                        'とくこう: ${pokemon.specialAttack}'),
-                                    _statusItem(
-                                        'とくぼう: ${pokemon.specialDefense}'),
-                                    _statusItem('すばやさ: ${pokemon.speed}'),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                          _status(pokemon),
                         ],
                       ),
                     );
@@ -186,6 +139,131 @@ class PokemonDetailPage extends HookConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  ///
+  /// ステータス
+  /// [pokemon] ポケモン詳細ビューモデル
+  ///
+  Widget _status(PokemonDetailViewModel pokemon) {
+    return HookConsumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final size = MediaQuery.of(context).size.height;
+        print(size);
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
+          decoration: BoxDecoration(
+            color: Style.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(32.0),
+              topRight: Radius.circular(32.0),
+            ),
+          ),
+          height: _statusContainerSize(MediaQuery.of(context).size.height),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'たかさ: ${pokemon.height}cm',
+                    style: Style.detailItemHeaderTextStyle,
+                  ),
+                  SizedBox(
+                    width: 16.0,
+                  ),
+                  Text(
+                    'おもさ: ${pokemon.weight}kg',
+                    style: Style.detailItemHeaderTextStyle,
+                  ),
+                ],
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(bottom: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _statusItem('HP: ${pokemon.hp}'),
+                      _statusItem('こうげき: ${pokemon.attack}'),
+                      _statusItem('しゅび: ${pokemon.defense}'),
+                      _statusItem('とくこう: ${pokemon.specialAttack}'),
+                      _statusItem('とくぼう: ${pokemon.specialDefense}'),
+                      _statusItem('すばやさ: ${pokemon.speed}'),
+                      _movesButton(pokemon.moves),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  ///
+  /// おぼえるわざボタン
+  /// [moves] おぼえるわざリスト
+  ///
+  Widget _movesButton(List<String> moves) {
+    return HookConsumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        return Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Util.appDebugPrint(
+                  place: runtimeType.toString(),
+                  event: 'onPressed',
+                  value: 'moves');
+              showModalBottomSheet(
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(32.0)),
+                ),
+                context: context,
+                builder: (context) {
+                  return Container(
+                    height: _statusContainerSize(
+                        MediaQuery.of(context).size.height),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return _statusItem(moves[index]);
+                      },
+                      itemCount: moves.length,
+                    ),
+                  );
+                },
+                isScrollControlled: true,
+              );
+            },
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+              child: Text(
+                'おぼえるわざ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Style.white,
+                ),
+              ),
+            ),
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              elevation: MaterialStateProperty.all(2.0),
+              backgroundColor: MaterialStateProperty.all(Style.blueGray),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -212,6 +290,22 @@ class PokemonDetailPage extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  ///
+  /// ステータスコンテナサイズ
+  /// [deviceHeight] デバイスの高さ
+  ///
+  double _statusContainerSize(double deviceHeight) {
+    double statusContainerSize = 0;
+    // Super Retina XDR
+    if (deviceHeight > 812) {
+      statusContainerSize = deviceHeight * 0.6;
+    } else {
+      statusContainerSize = deviceHeight * 0.5;
+    }
+
+    return statusContainerSize;
   }
 
   ///
