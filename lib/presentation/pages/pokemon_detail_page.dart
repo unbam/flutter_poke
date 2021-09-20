@@ -65,9 +65,7 @@ class PokemonDetailPage extends HookConsumerWidget {
                     }, [url]));
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return Container();
                     }
 
                     final pokemon = ref.watch(pokemonDetailViewModelProvider);
