@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../util/util.dart';
+import '../components/loading_monster_ball.dart';
 import '../style.dart';
 import '../view_models/pokemon_detail_view_model.dart';
 import '../view_models/pokemon_name_view_model.dart';
@@ -27,6 +28,23 @@ class PokemonDetailPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // ポケモン詳細URL
     final url = ModalRoute.of(context)!.settings.arguments as String;
+
+    // ポケモン詳細の取得
+    final snapshot = useFuture(useMemoized(() {
+      return ref.read(pokemonDetailViewModelProvider).fetch(url: url);
+    }, [url]));
+
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Scaffold(
+        backgroundColor: Style.teal,
+        body: Stack(children: [
+          Positioned(
+            right: -20,
+            child: LoadingMonsterBall(LoadingColorType.white),
+          ),
+        ]),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Style.teal,
@@ -59,17 +77,6 @@ class PokemonDetailPage extends HookConsumerWidget {
                 // Body
                 HookBuilder(
                   builder: (BuildContext context) {
-                    // ポケモン詳細の取得
-                    final snapshot = useFuture(useMemoized(() {
-                      return ref
-                          .read(pokemonDetailViewModelProvider)
-                          .fetch(url: url);
-                    }, [url]));
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    }
-
                     final pokemon = ref.read(pokemonDetailViewModelProvider);
 
                     final name = ref
