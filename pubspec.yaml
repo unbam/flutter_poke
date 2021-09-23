@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  audioplayers: ^0.20.1
   cupertino_icons: ^1.0.2
   dio: ^4.0.0
   flutter_hooks: ^0.18.0
@@ -32,6 +33,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/jsons/
+    - assets/sounds/
 
   fonts:
    - family: Pokemon

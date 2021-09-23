@@ -1,11 +1,14 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../util/util.dart';
+import '../components/loading_monster_ball.dart';
 import '../style.dart';
 import '../view_models/pokemon_detail_view_model.dart';
+import '../view_models/pokemon_name_view_model.dart';
 
 ///
 /// ポケモン詳細ページ
@@ -26,6 +29,23 @@ class PokemonDetailPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // ポケモン詳細URL
     final url = ModalRoute.of(context)!.settings.arguments as String;
+
+    // ポケモン詳細の取得
+    final snapshot = useFuture(useMemoized(() {
+      return ref.read(pokemonDetailViewModelProvider).fetch(url: url);
+    }, [url]));
+
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Scaffold(
+        backgroundColor: Style.teal,
+        body: Stack(children: [
+          Positioned(
+            right: -20,
+            child: LoadingMonsterBall(LoadingColorType.white),
+          ),
+        ]),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Style.teal,
@@ -58,18 +78,11 @@ class PokemonDetailPage extends HookConsumerWidget {
                 // Body
                 HookBuilder(
                   builder: (BuildContext context) {
-                    // ポケモン詳細の取得
-                    final snapshot = useFuture(useMemoized(() {
-                      return ref
-                          .watch(pokemonDetailViewModelProvider)
-                          .fetch(url: url);
-                    }, [url]));
+                    final pokemon = ref.read(pokemonDetailViewModelProvider);
 
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    }
-
-                    final pokemon = ref.watch(pokemonDetailViewModelProvider);
+                    final name = ref
+                        .read(pokemonNameViewModelProvider)
+                        .getJapaneseName(englishName: pokemon.name);
 
                     return Expanded(
                       child: Column(
@@ -82,7 +95,7 @@ class PokemonDetailPage extends HookConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  pokemon.name,
+                                  name,
                                   style: TextStyle(
                                     color: Style.white,
                                     fontSize: 24,
@@ -101,11 +114,24 @@ class PokemonDetailPage extends HookConsumerWidget {
                             ),
                           ),
                           // アイコン
-                          Image.network(
-                            pokemon.iconUrl,
-                            width: 160.0,
-                            height: 160.0,
-                            fit: BoxFit.fill,
+                          GestureDetector(
+                            onTap: () async {
+                              if (pokemon.name == 'Pikachu') {
+                                Util.appDebugPrint(
+                                  place: runtimeType.toString(),
+                                  event: 'Icon: onTap',
+                                  value: pokemon.name,
+                                );
+                                final player = AudioCache();
+                                player.play('sounds/025.wav');
+                              }
+                            },
+                            child: Image.network(
+                              pokemon.iconUrl,
+                              width: 160.0,
+                              height: 160.0,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                           // タイプ
                           Wrap(
@@ -147,10 +173,8 @@ class PokemonDetailPage extends HookConsumerWidget {
   /// [pokemon] ポケモン詳細ビューモデル
   ///
   Widget _status(PokemonDetailViewModel pokemon) {
-    return HookConsumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final size = MediaQuery.of(context).size.height;
-        print(size);
+    return HookBuilder(
+      builder: (BuildContext context) {
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
           decoration: BoxDecoration(
@@ -209,8 +233,8 @@ class PokemonDetailPage extends HookConsumerWidget {
   /// [moves] おぼえるわざリスト
   ///
   Widget _movesButton(List<String> moves) {
-    return HookConsumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+    return HookBuilder(
+      builder: (BuildContext context) {
         return Center(
           child: ElevatedButton(
             onPressed: () {
