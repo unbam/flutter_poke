@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../data/models/pokemon_result.dart';
 import '../../util/util.dart';
+import '../components/loading_monster_ball.dart';
 import '../style.dart';
 import '../view_models/pokemon_list_view_model.dart';
 import '../view_models/pokemon_name_view_model.dart';
@@ -25,6 +26,26 @@ class PokemonListPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final snapshot = useFuture(useMemoized(() {
+      return ref
+          .watch(pokemonListViewModelProvider.notifier)
+          .fetch(limit: 100, offset: 0);
+    }));
+
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Scaffold(
+        backgroundColor: Style.white,
+        body: Stack(
+          children: [
+            Positioned(
+              right: -20,
+              child: LoadingMonsterBall(LoadingColorType.gray),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Style.white,
       body: Stack(
@@ -50,16 +71,6 @@ class PokemonListPage extends HookConsumerWidget {
                 // List
                 HookBuilder(
                   builder: (context) {
-                    final snapshot = useFuture(useMemoized(() {
-                      return ref
-                          .watch(pokemonListViewModelProvider.notifier)
-                          .fetch(limit: 100, offset: 0);
-                    }));
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    }
-
                     final pokemons = ref.watch(pokemonListViewModelProvider)
                         as List<PokemonResult>;
 
