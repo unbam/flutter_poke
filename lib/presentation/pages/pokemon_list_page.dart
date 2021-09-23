@@ -66,8 +66,10 @@ class PokemonListPage extends HookConsumerWidget {
                     return Expanded(
                       child: ListView.builder(
                         itemBuilder: (context, index) {
-                          // ページング
-                          if (index >= pokemons.length - 1) {
+                          // ページング(日本語表記が721までなのでそれ以上は表示しない)
+                          if (index > 720) {
+                            return SizedBox.shrink();
+                          } else if (index >= pokemons.length - 1) {
                             Util.appDebugPrint(
                                 place: runtimeType.toString(),
                                 event: 'ListView.builder',
@@ -76,6 +78,7 @@ class PokemonListPage extends HookConsumerWidget {
                                 .watch(pokemonListViewModelProvider.notifier)
                                 .fetch(limit: 100, offset: pokemons.length));
                           }
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
                             child: _pokemonItem(pokemons[index], index),
