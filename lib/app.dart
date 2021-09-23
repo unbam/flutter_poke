@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'presentation/pages/pokemon_list_page.dart';
 import 'presentation/pages/splash_screen_page.dart';
+import 'presentation/view_models/pokemon_name_view_model.dart';
 import 'util/constant.dart';
 
 class App extends HookConsumerWidget {
@@ -23,12 +24,16 @@ class App extends HookConsumerWidget {
 class Root extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 仮想初期処理
+    // 初期処理
     final snapshot = useFuture(
       useMemoized(
-        () async => await Future.delayed(
-          Duration(milliseconds: 3000),
-        ),
+        () async {
+          // ポケモン名リストの読み込み
+          await ref.read(pokemonNameViewModelProvider).loadNameList();
+          await Future.delayed(
+            Duration(milliseconds: 3000),
+          );
+        },
       ),
     );
 

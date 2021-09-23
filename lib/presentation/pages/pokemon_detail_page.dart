@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../util/util.dart';
 import '../style.dart';
 import '../view_models/pokemon_detail_view_model.dart';
+import '../view_models/pokemon_name_view_model.dart';
 
 ///
 /// ポケモン詳細ページ
@@ -61,7 +62,7 @@ class PokemonDetailPage extends HookConsumerWidget {
                     // ポケモン詳細の取得
                     final snapshot = useFuture(useMemoized(() {
                       return ref
-                          .watch(pokemonDetailViewModelProvider)
+                          .read(pokemonDetailViewModelProvider)
                           .fetch(url: url);
                     }, [url]));
 
@@ -69,7 +70,11 @@ class PokemonDetailPage extends HookConsumerWidget {
                       return Container();
                     }
 
-                    final pokemon = ref.watch(pokemonDetailViewModelProvider);
+                    final pokemon = ref.read(pokemonDetailViewModelProvider);
+
+                    final name = ref
+                        .read(pokemonNameViewModelProvider)
+                        .getJapaneseName(englishName: pokemon.name);
 
                     return Expanded(
                       child: Column(
@@ -82,7 +87,7 @@ class PokemonDetailPage extends HookConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  pokemon.name,
+                                  name,
                                   style: TextStyle(
                                     color: Style.white,
                                     fontSize: 24,
@@ -147,10 +152,8 @@ class PokemonDetailPage extends HookConsumerWidget {
   /// [pokemon] ポケモン詳細ビューモデル
   ///
   Widget _status(PokemonDetailViewModel pokemon) {
-    return HookConsumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final size = MediaQuery.of(context).size.height;
-        print(size);
+    return HookBuilder(
+      builder: (BuildContext context) {
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
           decoration: BoxDecoration(
@@ -209,8 +212,8 @@ class PokemonDetailPage extends HookConsumerWidget {
   /// [moves] おぼえるわざリスト
   ///
   Widget _movesButton(List<String> moves) {
-    return HookConsumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+    return HookBuilder(
+      builder: (BuildContext context) {
         return Center(
           child: ElevatedButton(
             onPressed: () {

@@ -7,6 +7,7 @@ import '../../data/models/pokemon_result.dart';
 import '../../util/util.dart';
 import '../style.dart';
 import '../view_models/pokemon_list_view_model.dart';
+import '../view_models/pokemon_name_view_model.dart';
 import 'pokemon_detail_page.dart';
 
 ///
@@ -95,22 +96,26 @@ class PokemonListPage extends HookConsumerWidget {
 
   ///
   /// リストアイテムウィジェット
-  /// [pokemons] ポケモンリスト
+  /// [pokemon] ポケモン結果情報
   /// [index] インデックス
   ///
-  Widget _pokemonItem(PokemonResult pokemons, int index) {
+  Widget _pokemonItem(PokemonResult pokemon, int index) {
     return HookConsumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final name = ref
+            .read(pokemonNameViewModelProvider)
+            .getJapaneseName(englishName: pokemon.name);
+
         return GestureDetector(
           onTap: () {
             Util.appDebugPrint(
                 place: runtimeType.toString(),
                 event: '_pokemonItem: onTap',
-                value: 'name: ${pokemons.name}, index: $index');
+                value: 'name: ${pokemon.name}, index: $index');
 
             // 詳細画面に遷移
             Navigator.of(context)
-                .push(PokemonDetailPage.route(url: pokemons.url));
+                .push(PokemonDetailPage.route(url: pokemon.url));
           },
           child: Card(
             shape: RoundedRectangleBorder(
@@ -124,7 +129,7 @@ class PokemonListPage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    pokemons.name,
+                    name,
                     style: Style.listItemTextStyle,
                   ),
                   SizedBox(
