@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
@@ -113,11 +114,24 @@ class PokemonDetailPage extends HookConsumerWidget {
                             ),
                           ),
                           // アイコン
-                          Image.network(
-                            pokemon.iconUrl,
-                            width: 160.0,
-                            height: 160.0,
-                            fit: BoxFit.fill,
+                          GestureDetector(
+                            onTap: () async {
+                              if (pokemon.name == 'Pikachu') {
+                                Util.appDebugPrint(
+                                  place: runtimeType.toString(),
+                                  event: 'Icon: onTap',
+                                  value: pokemon.name,
+                                );
+                                final player = AudioCache();
+                                player.play('sounds/025.wav');
+                              }
+                            },
+                            child: Image.network(
+                              pokemon.iconUrl,
+                              width: 160.0,
+                              height: 160.0,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                           // タイプ
                           Wrap(
